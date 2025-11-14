@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หาร ร่วม มาก</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        h1 .emoji {
+            font-size: 32px;
+        }
+        h2 {
+            color: #3498db;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .input-group {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+            gap: 10px;
+        }
+        .input-group label {
+            width: 150px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        input, button, select {
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+        input, select {
+            flex: 1;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        button.remove {
+            background-color: #e74c3c;
+        }
+        button.remove:hover {
+            background-color: #c0392b;
+        }
+        button.success {
+            background-color: #2ecc71;
+        }
+        button.success:hover {
+            background-color: #27ae60;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .people-list, .food-list, .discount-list, .delivery-section {
+            margin-top: 20px;
+        }
+        .person-item, .food-item, .discount-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            align-items: center;
+            border-left: 4px solid #3498db;
+        }
+        .food-item {
+            border-left-color: #2ecc71;
+        }
+        .discount-item {
+            border-left-color: #e74c3c;
+        }
+        .delivery-item {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        .result {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .result h3 {
+            margin-top: 0;
+            font-size: 22px;
+            text-align: center;
+        }
+        .person-payment {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            font-weight: 600;
+        }
+        .no-data {
+            text-align: center;
+            font-size: 20px;
+            color: #ffffff;
+            font-style: italic;
+            padding: 20px;
+        }
+        .enter-hint {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+            margin-left: 160px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            flex: none;
+        }
+        .delivery-input {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .input-group label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            input, select, button {
+                width: 100%;
+                margin-top: 5px;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            .enter-hint {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="emoji">🍽️</span> หาร ร่วม มาก</h1>
+        
+        <div class="section">
+            <h2>เพิ่มคน</h2>
+            <div class="input-group">
+                <label for="person-name">ชื่อ:</label>
+                <input type="text" id="person-name">
+            </div>
+            <div class="controls">
+                <button id="add-person">เพิ่มคน</button>
+                <button id="clear-people" class="remove">ลบคนทั้งหมด</button>
+            </div>
+            <div class="people-list" id="people-list">
+                <div class="no-data">ยังไม่มีคน</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>เพิ่มอาหาร</h2>
+            <div class="input-group">
+                <label for="food-name">ชื่ออาหาร:</label>
+                <input type="text" id="food-name">
+            </div>
+            <div class="input-group">
+                <label for="food-price">ราคา (บาท):</label>
+                <input type="number" id="food-price" min="0">
+            </div>
+            <div class="input-group">
+                <label for="food-person">คนที่สั่ง:</label>
+                <select id="food-person">
+                    <option value="">เลือกคนที่สั่ง</option>
+                </select>
+            </div>
+            <div class="controls">
+                <button id="add-food">เพิ่มอาหาร</button>
+                <button id="clear-foods" class="remove">ลบอาหารทั้งหมด</button>
+            </div>
+            <div class="food-list" id="food-list">
+                <div class="no-data">ยังไม่มีรายการอาหาร</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>ส่วนลด</h2>
+            <div class="input-group">
+                <label for="discount-type">ประเภทส่วนลด:</label>
+                <select id="discount-type">
+                    <option value="fixed">จำนวนเงิน (บาท)</option>
+                    <option value="percent">เปอร์เซ็นต์ (%)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="discount-value">มูลค่าส่วนลด:</label>
+                <input type="number" id="discount-value" min="0">
+            </div>
+            <div class="controls">
+                <button id="add-discount">เพิ่มส่วนลด</button>
+                <button id="clear-discounts" class="remove">ลบส่วนลดทั้งหมด</button>
+            </div>
+            <div class="discount-list" id="discount-list">
+                <div class="no-data">ยังไม่มีส่วนลด</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>ค่าส่ง</h2>
+            <div class="checkbox-group">
+                <input type="checkbox" id="include-delivery">
+                <label for="include-delivery" style="font-weight: 600;">เพิ่มค่าส่ง</label>
+            </div>
+            <div class="delivery-input" id="delivery-input">
+                <div class="input-group">
+                    <label for="delivery-fee">ค่าส่ง (บาท):</label>
+                    <input type="number" id="delivery-fee" min="0" placeholder="เช่น 20">
+                </div>
+            </div>
+            <div class="delivery-section" id="delivery-section">
+                <div class="no-data">ยังไม่ได้เพิ่มค่าส่ง</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>คำนวณ</h2>
+            <div class="controls">
+                <button id="calculate" class="success">คำนวณยอดที่ต้องจ่าย</button>
+            </div>
+            <div class="result" id="result">
+                <div class="no-data">กดปุ่มคำนวณเพื่อดูผลลัพธ์</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ตัวแปรเก็บข้อมูล
+        let people = [];
+        let foods = [];
+        let discounts = [];
+        let deliveryFee = 0;
+        let includeDelivery = false;
+
+        // อ้างอิงถึง DOM elements
+        const personNameInput = document.getElementById('person-name');
+        const addPersonBtn = document.getElementById('add-person');
+        const clearPeopleBtn = document.getElementById('clear-people');
+        const peopleList = document.getElementById('people-list');
+        const foodNameInput = document.getElementById('food-name');
+        const foodPriceInput = document.getElementById('food-price');
+        const foodPersonSelect = document.getElementById('food-person');
+        const addFoodBtn = document.getElementById('add-food');
+        const clearFoodsBtn = document.getElementById('clear-foods');
+        const foodList = document.getElementById('food-list');
+        const discountTypeSelect = document.getElementById('discount-type');
+        const discountValueInput = document.getElementById('discount-value');
+        const addDiscountBtn = document.getElementById('add-discount');
+        const clearDiscountsBtn = document.getElementById('clear-discounts');
+        const discountList = document.getElementById('discount-list');
+        const includeDeliveryCheckbox = document.getElementById('include-delivery');
+        const deliveryInput = document.getElementById('delivery-input');
+        const deliveryFeeInput = document.getElementById('delivery-fee');
+        const deliverySection = document.getElementById('delivery-section');
+        const calculateBtn = document.getElementById('calculate');
+        const resultDiv = document.getElementById('result');
+
+        // เพิ่มคน
+        function addPerson() {
+            const name = personNameInput.value.trim();
+            
+            if (!name) {
+                alert('กรุณากรอกชื่อ');
+                return;
+            }
+            
+            if (people.some(person => person.name === name)) {
+                alert('มีชื่อนี้อยู่แล้ว');
+                return;
+            }
+            
+            people.push({ 
+                id: Date.now().toString(),
+                name 
+            });
+            renderPeopleList();
+            updateFoodPersonSelect();
+            
+            // เคลียร์ฟอร์ม
+            personNameInput.value = '';
+            personNameInput.focus();
+        }
+
+        // ลบคน
+        function removePerson(id) {
+            people = people.filter(person => person.id !== id);
+            
+            // ลบอาหารที่เชื่อมโยงกับคนนี้
+            foods = foods.filter(food => food.personId !== id);
+            
+            renderPeopleList();
+            renderFoodList();
+            updateFoodPersonSelect();
+        }
+
+        // แสดงรายชื่อคน
+        function renderPeopleList() {
+            peopleList.innerHTML = '';
+            
+            if (people.length === 0) {
+                peopleList.innerHTML = '<div class="no-data">ยังไม่มีคน</div>';
+                return;
+            }
+            
+            people.forEach(person => {
+                const personItem = document.createElement('div');
+                personItem.className = 'person-item';
+                personItem.innerHTML = `
+                    <span>${person.name}</span>
+                    <button class="remove" onclick="removePerson('${person.id}')">ลบ</button>
+                `;
+                peopleList.appendChild(personItem);
+            });
+        }
+
+        // อัพเดท dropdown เลือกคนสำหรับอาหาร
+        function updateFoodPersonSelect() {
+            foodPersonSelect.innerHTML = '<option value="">เลือกคนที่สั่ง</option>';
+            
+            people.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person.id;
+                option.textContent = person.name;
+                foodPersonSelect.appendChild(option);
+            });
+        }
+
+        // เพิ่มอาหาร
+        function addFood() {
+            const name = foodNameInput.value.trim();
+            const price = parseFloat(foodPriceInput.value);
+            const personId = foodPersonSelect.value;
+            
+            if (!name || isNaN(price) || price <= 0 || !personId) {
+                alert('กรุณากรอกข้อมูลอาหารให้ครบถ้วนและถูกต้อง');
+                return;
+            }
+            
+            const person = people.find(p => p.id === personId);
+            
+            foods.push({ 
+                id: Date.now().toString(),
+                name, 
+                price,
+                personId,
+                personName: person.name
+            });
+            renderFoodList();
+            
+            // เคลียร์ฟอร์ม
+            foodNameInput.value = '';
+            foodPriceInput.value = '';
+            foodNameInput.focus();
+        }
+
+        // ลบอาหาร
+        function removeFood(id) {
+            foods = foods.filter(food => food.id !== id);
+            renderFoodList();
+        }
+
+        // แสดงรายการอาหาร
+        function renderFoodList() {
+            foodList.innerHTML = '';
+            
+            if (foods.length === 0) {
+                foodList.innerHTML = '<div class="no-data">ยังไม่มีรายการอาหาร</div>';
+                return;
+            }
+            
+            let total = 0;
+            
+            foods.forEach(food => {
+                const foodItem = document.createElement('div');
+                foodItem.className = 'food-item';
+                foodItem.innerHTML = `
+                    <div>
+                        <div><strong>${food.name}</strong></div>
+                        <div style="font-size: 14px; color: #7f8c8d;">สั่งโดย: ${food.personName}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div>${food.price.toFixed(2)} บาท</div>
+                        <button class="remove" onclick="removeFood('${food.id}')" style="margin-top: 5px;">ลบ</button>
+                    </div>
+                `;
+                foodList.appendChild(foodItem);
+                total += food.price;
+            });
+            
+            // แสดงยอดรวม
+            const totalItem = document.createElement('div');
+            totalItem.className = 'food-item';
+            totalItem.style.fontWeight = 'bold';
+            totalItem.style.backgroundColor = '#e8f4fc';
+            totalItem.innerHTML = `
+                <span>ยอดรวมอาหารทั้งหมด</span>
+                <span>${total.toFixed(2)} บาท</span>
+            `;
+            foodList.appendChild(totalItem);
+        }
+
+        // เพิ่มส่วนลด
+        function addDiscount() {
+            const type = discountTypeSelect.value;
+            const value = parseFloat(discountValueInput.value);
+            
+            if (isNaN(value) || value <= 0) {
+                alert('กรุณากรอกมูลค่าส่วนลดที่ถูกต้อง');
+                return;
+            }
+            
+            discounts.push({ 
+                id: Date.now().toString(),
+                type, 
+                value
+            });
+            renderDiscountList();
+            
+            // เคลียร์ฟอร์ม
+            discountValueInput.value = '';
+            discountValueInput.focus();
+        }
+
+        // ลบส่วนลด
+        function removeDiscount(id) {
+            discounts = discounts.filter(discount => discount.id !== id);
+            renderDiscountList();
+        }
+
+        // แสดงรายการส่วนลด
+        function renderDiscountList() {
+            discountList.innerHTML = '';
+            
+            if (discounts.length === 0) {
+                discountList.innerHTML = '<div class="no-data">ยังไม่มีส่วนลด</div>';
+                return;
+            }
+            
+            discounts.forEach(discount => {
+                const discountItem = document.createElement('div');
+                discountItem.className = 'discount-item';
+                const discountText = discount.type === 'percent' 
+                    ? `${discount.value}%` 
+                    : `${discount.value.toFixed(2)} บาท`;
+                    
+                discountItem.innerHTML = `
+                    <span>ส่วนลด: ${discountText}</span>
+                    <button class="remove" onclick="removeDiscount('${discount.id}')">ลบ</button>
+                `;
+                discountList.appendChild(discountItem);
+            });
+        }
+
+        // จัดการค่าส่ง
+        function toggleDelivery() {
+            includeDelivery = includeDeliveryCheckbox.checked;
+            
+            if (includeDelivery) {
+                deliveryInput.style.display = 'block';
+                deliveryFeeInput.focus();
+            } else {
+                deliveryInput.style.display = 'none';
+                deliveryFee = 0;
+                renderDeliverySection();
+            }
+        }
+
+        // บันทึกค่าส่ง
+        function saveDeliveryFee() {
+            const fee = parseFloat(deliveryFeeInput.value);
+            
+            if (isNaN(fee) || fee <= 0) {
+                alert('กรุณากรอกค่าส่งที่ถูกต้อง');
+                return;
+            }
+            
+            deliveryFee = fee;
+            renderDeliverySection();
+            deliveryFeeInput.value = '';
+        }
+
+        // แสดงข้อมูลค่าส่ง
+        function renderDeliverySection() {
+            deliverySection.innerHTML = '';
+            
+            if (!includeDelivery || deliveryFee === 0) {
+                deliverySection.innerHTML = '<div class="no-data">ยังไม่ได้เพิ่มค่าส่ง</div>';
+                return;
+            }
+            
+            const deliveryItem = document.createElement('div');
+            deliveryItem.className = 'delivery-item';
+            deliveryItem.innerHTML = `
+                <span>ค่าส่งทั้งหมด</span>
+                <div>
+                    <span>${deliveryFee.toFixed(2)} บาท</span>
+                    <button class="remove" onclick="removeDelivery()" style="margin-left: 10px;">ลบ</button>
+                </div>
+            `;
+            deliverySection.appendChild(deliveryItem);
+        }
+
+        // ลบค่าส่ง
+        function removeDelivery() {
+            deliveryFee = 0;
+            includeDeliveryCheckbox.checked = false;
+            includeDelivery = false;
+            deliveryInput.style.display = 'none';
+            renderDeliverySection();
+        }
+
+        // คำนวณยอดที่แต่ละคนต้องจ่าย
+        function calculate() {
+            if (people.length === 0) {
+                resultDiv.innerHTML = '<div class="no-data">กรุณาเพิ่มคนก่อน</div>';
+                return;
+            }
+            
+            if (foods.length === 0) {
+                resultDiv.innerHTML = '<div class="no-data">กรุณาเพิ่มรายการอาหารก่อน</div>';
+                return;
+            }
+            
+            // คำนวณยอดรวมทั้งหมดก่อนหักส่วนลด
+            const totalBeforeDiscount = foods.reduce((sum, food) => sum + food.price, 0);
+            
+            // คำนวณส่วนลดทั้งหมด
+            let totalDiscount = 0;
+            discounts.forEach(discount => {
+                if (discount.type === 'percent') {
+                    totalDiscount += totalBeforeDiscount * (discount.value / 100);
+                } else {
+                    totalDiscount += discount.value;
+                }
+            });
+            
+            // ตรวจสอบว่าส่วนลดไม่เกินยอดรวม
+            if (totalDiscount > totalBeforeDiscount) {
+                totalDiscount = totalBeforeDiscount;
+            }
+            
+            // ยอดรวมหลังหักส่วนลด
+            const totalAfterDiscount = totalBeforeDiscount - totalDiscount;
+            
+            // คำนวณยอดรวมของแต่ละคนก่อนหักส่วนลด
+            const personTotals = {};
+            people.forEach(person => {
+                personTotals[person.id] = 0;
+            });
+            
+            foods.forEach(food => {
+                if (personTotals.hasOwnProperty(food.personId)) {
+                    personTotals[food.personId] += food.price; // แก้ไขเป็น food.personId
+                }
+            });
+            
+            // คำนวณสัดส่วนส่วนลดของแต่ละคน
+            const personDiscounts = {};
+            Object.keys(personTotals).forEach(personId => {
+                if (totalBeforeDiscount > 0) {
+                    personDiscounts[personId] = totalDiscount * (personTotals[personId] / totalBeforeDiscount);
+                } else {
+                    personDiscounts[personId] = 0;
+                }
+            });
+            
+            // คำนวณค่าส่งต่อคน (หารเท่าๆกัน)
+            const deliveryPerPerson = includeDelivery && deliveryFee > 0 ? deliveryFee / people.length : 0;
+            
+            // คำนวณยอดที่แต่ละคนต้องจ่าย
+            const personPayments = {};
+            Object.keys(personTotals).forEach(personId => {
+                personPayments[personId] = personTotals[personId] - personDiscounts[personId] + deliveryPerPerson;
+            });
+            
+            // แสดงผลลัพธ์
+            let resultHTML = `
+                <h3>สรุปยอดที่ต้องจ่าย</h3>
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>ยอดรวมอาหารทั้งหมด:</span>
+                        <span>${totalBeforeDiscount.toFixed(2)} บาท</span>
+                    </div>
+            `;
+            
+            // เพิ่มบรรทัดยอดค่าส่ง (แสดงตลอด ไม่ว่าจะมีค่าส่งหรือไม่)
+            if (includeDelivery && deliveryFee > 0) {
+                resultHTML += `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>ยอดค่าส่ง:</span>
+                        <span>+ ${deliveryFee.toFixed(2)} บาท</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>ส่วนลดทั้งหมด:</span>
+                        <span>- ${totalDiscount.toFixed(2)} บาท</span>
+                    </div>
+                `;
+            } else {
+                resultHTML += `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>ยอดค่าส่ง:</span>
+                        <span>+ 0.00 บาท</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>ส่วนลดทั้งหมด:</span>
+                        <span>- ${totalDiscount.toFixed(2)} บาท</span>
+                    </div>
+                `;
+            }
+            
+            resultHTML += `
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px;">
+                        <span>ยอดรวมที่ต้องจ่าย:</span>
+                        <span>${(totalAfterDiscount + (includeDelivery ? deliveryFee : 0)).toFixed(2)} บาท</span>
+                    </div>
+                </div>
+                <h4 style="margin-bottom: 15px;">แต่ละคนต้องจ่าย:</h4>
+            `;
+            
+            Object.keys(personPayments).forEach(personId => {
+                const person = people.find(p => p.id === personId);
+                const payment = personPayments[personId];
+                const discount = personDiscounts[personId];
+                const beforeDiscount = personTotals[personId];
+                
+                resultHTML += `
+                    <div class="person-payment">
+                        <div>
+                            <div><strong>${person.name}</strong></div>
+                            <div style="font-size: 14px; opacity: 0.9;">
+                                อาหาร: ${beforeDiscount.toFixed(2)} บาท
+                                ${discount > 0 ? `- ส่วนลด: ${discount.toFixed(2)} บาท` : ''}
+                                ${deliveryPerPerson > 0 ? `+ ค่าส่ง: ${deliveryPerPerson.toFixed(2)} บาท` : ''}
+                            </div>
+                        </div>
+                        <div style="font-weight: bold; font-size: 18px;">
+                            ${payment.toFixed(2)} บาท
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultDiv.innerHTML = resultHTML;
+        }
+
+        // ฟังก์ชันจัดการการกด Enter
+        function handleEnterKey(event, addFunction, focusElement = null) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addFunction();
+                if (focusElement) {
+                    focusElement.focus();
+                }
+            }
+        }
+
+        // ตั้งค่า event listeners
+        addPersonBtn.addEventListener('click', addPerson);
+        personNameInput.addEventListener('keydown', (event) => {
+            handleEnterKey(event, addPerson, personNameInput);
+        });
+        
+        clearPeopleBtn.addEventListener('click', () => {
+            if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบคนทั้งหมด?')) {
+                people = [];
+                foods = [];
+                renderPeopleList();
+                renderFoodList();
+                updateFoodPersonSelect();
+            }
+        });
+        
+        addFoodBtn.addEventListener('click', addFood);
+        foodNameInput.addEventListener('keydown', (event) => {
+            handleEnterKey(event, addFood, foodNameInput);
+        });
+        foodPriceInput.addEventListener('keydown', (event) => {
+            handleEnterKey(event, addFood, foodNameInput);
+        });
+        foodPersonSelect.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addFood();
+                foodNameInput.focus();
+            }
+        });
+        
+        clearFoodsBtn.addEventListener('click', () => {
+            if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบอาหารทั้งหมด?')) {
+                foods = [];
+                renderFoodList();
+            }
+        });
+        
+        addDiscountBtn.addEventListener('click', addDiscount);
+        discountValueInput.addEventListener('keydown', (event) => {
+            handleEnterKey(event, addDiscount, discountValueInput);
+        });
+        discountTypeSelect.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addDiscount();
+                discountValueInput.focus();
+            }
+        });
+        
+        clearDiscountsBtn.addEventListener('click', () => {
+            if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบส่วนลดทั้งหมด?')) {
+                discounts = [];
+                renderDiscountList();
+            }
+        });
+        
+        // Event listeners สำหรับค่าส่ง
+        includeDeliveryCheckbox.addEventListener('change', toggleDelivery);
+        deliveryFeeInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                saveDeliveryFee();
+            }
+        });
+        
+        calculateBtn.addEventListener('click', calculate);
+        
+        // ตั้งค่าเริ่มต้น
+        renderPeopleList();
+        renderFoodList();
+        renderDiscountList();
+        renderDeliverySection();
+        updateFoodPersonSelect();
+    </script>
+</body>
+</html>
